@@ -112,7 +112,7 @@ kafka-topics.sh --bootstrap-server localhost:9092 --list
 
 ### Running data-generator:
 
-Instructions on how to install data-generator can be found [here](https://github.com/dogukannulu/data-generator)
+Instructions on how to install data-generator can be found [here](https://github.com/erkansirin78/data-generator)
 
 This repo has been forked from [erkansirin78](https://github.com/erkansirin78). Many thanks to him since 
 this script successfully simulates a streaming data.
@@ -122,7 +122,8 @@ the location of data-generator.
 
 Streaming data example:
 
-![image](assets/streaming data example.png)
+![image](assets/streamingexample.png)
+
 
 
 
