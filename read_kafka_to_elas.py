@@ -1,19 +1,21 @@
+# Import necessary libraries
 from pyspark.sql import SparkSession, functions as F 
 from pyspark.sql.functions import col
 from elasticsearch import Elasticsearch
 import time
-from pyspark.sql.types import LongType
-from pyspark.sql.types import IntegerType, FloatType, StringType, TimestampType
-from pyspark.sql.types import IntegerType, FloatType, StringType, TimestampType
+from pyspark.sql.types import LongType, IntegerType, FloatType, StringType, TimestampType
 
+# Create a SparkSession
 spark = SparkSession.builder \
     .appName("kafka_consumer") \
     .config("spark.sql.streaming.failOnDataLoss", "false") \
     .getOrCreate()
 
+# Set log level to ERROR
 spark.sparkContext.setLogLevel('ERROR')
 print("Spark version:", spark.version)
 
+# Define Elasticsearch index settings and mappings
 system_index = {
     "settings": {
         "index": {
@@ -50,7 +52,7 @@ system_index = {
     }
 }
 
-
+# Read data from Kafka
 df1 = spark \
     .readStream \
     .format("kafka") \
@@ -58,8 +60,10 @@ df1 = spark \
     .option("subscribe", "office-input") \
     .load()
 
+# Select key and value columns
 df2 = df1.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
+# Split the value column and cast to appropriate types
 df3 = df2.withColumn("ts_min_bignt", F.split(F.col("value"), ",")[0].cast(IntegerType())) \
          .withColumn("temperature", F.split(F.col("value"), ",")[1].cast(FloatType())) \
          .withColumn("pir", F.split(F.col("value"), ",")[2].cast(FloatType())) \
@@ -70,27 +74,35 @@ df3 = df2.withColumn("ts_min_bignt", F.split(F.col("value"), ",")[0].cast(Intege
          .withColumn("event_ts_min", F.split(F.col("value"), ",")[7].cast(TimestampType())) \
          .drop("value")
     
+# Convert ts_min_bignt to milliseconds and drop the original column
 df3 = df3.withColumn("ts_min", F.col("ts_min_bignt").cast(LongType()) * 1000).drop("ts_min_bignt")
 
+# Print the schema of the DataFrame
 df3.printSchema()
 
+# Initialize Elasticsearch connection
 es = Elasticsearch("http://es:9200")
 
+# Define checkpoint directory
 checkpointDir = "/home/train/00_elk_spark_kafka/"
 
+# Define room numbers
 room_numbers = ['776', '754', '752']
+
+# Loop through room numbers
 for room_number in room_numbers:
-  index_name= "smart-sytem-office-" + room_number
-  try:
-    es.indices.delete(index=index_name)
-    print(f"Index {index_name} deleted.")
-  except:
-    print(f"No index {index_name}")
+    index_name = "smart-sytem-office-" + room_number
+    try:
+        # Delete existing index if any
+        es.indices.delete(index=index_name)
+        print(f"Index {index_name} deleted.")
+    except:
+        print(f"No index {index_name}")
 
-  
-  es.indices.create(index=index_name, body=system_index)
+    # Create new index with settings and mappings
+    es.indices.create(index=index_name, body=system_index)
 
- 
+# Define function to write data to Elasticsearch
 def write_to_sinks(df, batchId):
     room_numbers = ['776', '754', '752']
     for room_number in room_numbers:
@@ -105,6 +117,7 @@ def write_to_sinks(df, batchId):
             .option("es.net.http.header.Content-Type", "application/json") \
             .save()
 
+# Define the streaming query
 streamingQuery = (df3
                   .writeStream
                   .foreachBatch(write_to_sinks)
@@ -112,7 +125,9 @@ streamingQuery = (df3
                   .option("checkpointLocation", checkpointDir)
                   .start())
 
+# Await termination of the streaming query
 streamingQuery.awaitTermination()
+
 
 
 
