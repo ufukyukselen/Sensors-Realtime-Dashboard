@@ -27,7 +27,7 @@
 - Write the streaming data to **MinIO (AWS Object Storage)**.
 - Use **Apache Airflow** to orchestrate the whole data pipeline.
 
-![image](https://github.com/ufukyukselen/Sensors-Realtime-Dashboard/assets/dashboards_ss.jpeg)
+![image](assets/dashboards_ss.jpeg)
 
 
 
