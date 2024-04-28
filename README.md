@@ -1,6 +1,6 @@
 # Streaming Data Processing
 
-## Used Technologies and Services
+## 1)Used Technologies and Services
 
 - Apache Airflow
 - Apache Zookeeper
@@ -10,7 +10,6 @@
 - Apache Hadoop YARN
 - Elasticsearch
 - Kibana
-- MinIO
 - Docker
 
 ---
@@ -24,8 +23,9 @@
 - Use **data-generator** to simulate streaming data, and send the data to **Apache Kafka**.
 - Read the streaming data from Kafka topic using **PySpark (Spark Streaming)**.
 - Write the streaming data to **Elasticsearch**, and visualize it using **Kibana**.
-- Write the streaming data to **MinIO (AWS Object Storage)**.
-- Use **Apache Airflow** to orchestrate the whole data pipeline.
+
+![image](assets/schema.png)
+
 
 
 
