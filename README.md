@@ -27,7 +27,7 @@
 - Write the streaming data to **MinIO (AWS Object Storage)**.
 - Use **Apache Airflow** to orchestrate the whole data pipeline.
 
-![image](assets/dashboards_ss.jpeg)
+
 
 
 
@@ -196,10 +196,7 @@ GET /_cat/indices?v
 
 We can create a new dashboard using the data in office_input index. Here are some sample graphs:
 
-![dashboard1](img/dashboard1.PNG)
-![dashboard2](img/dashboard2.PNG)
-![dashboard3](img/dashboard3.PNG)
-![dashboard4](img/dashboard4.PNG)
+![image](assets/dashboards_ss.jpeg)
 
 Which contains:
 - Percentage of Movement Pie Chart
